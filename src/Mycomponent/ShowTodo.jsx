@@ -1,55 +1,66 @@
-import React from 'react'
-import { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import Modal from "./Modal";
 
 export default function ShowTodo() {
   const [data, setData] = useState([]);
-  let getApi = () => {
+
+  let getapi = () => {
     fetch("https://average-fish-sundress.cyclic.app/allContacts")
       .then((Response) => Response.json())
-      .then((json) => {
-        console.log(json)
-        setData(json)
-      })
+      .then((Response) => {
+        setData(Response);
+      });
   };
-  useEffect((getApi), [])
+
+  const delete_api = (id) => {
+    alert(id);
+    fetch(`https://average-fish-sundress.cyclic.app/removeContact/${id}`, {
+      method: "DELETE",
+      headers: { "Content-type": "application/json" },
+    }).then((Response) => {
+      Response.json();
+    });
+  };
+
+
+  useEffect(() => {
+    getapi();
+  }, []);
+
   return (
-
     <div>
-      My Api
-      <button onClick={getApi}>GET</button>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-      <div>
-        <ul>
+      <table className="table text-center container ">
+        <thead>
+          <tr>
+            <th scope="col">Firstname</th>
+            <th scope="col">Lastname</th>
+            <th scope="col">Phone no.</th>
+          </tr>
+        </thead>
+        <tbody>
           {data.map((item) => {
-            <li>{item._id}</li>
-          })}
-        </ul>
-      </div>
-    </div >
-
-
-  )
-}
-
-{/* <table className="table table-bordered"> */ }
-{/* <thead>
-            <tr >
-              <th scope="col" className='text-center'>First</th>
-              <th scope="col" className='text-center'>Last</th>
-              <th scope="col" className='text-center'>Handle</th>
-            </tr>
-          </thead>
-          <tbody>
-
-            {data.map(item => {
-              <tr>
+            return (
+              <tr key={item._id}>
                 <td>{item.firstName}</td>
-                <td></td>
+                <td>{item.lastName}</td>
+                <td>{item.phoneNumber}</td>
+                <div className="d-flex">
+                  <button
+                    className="btn bg-danger mb-1"
+                    onClick={() => {
+                      delete_api(item._id);
+                    }}
+                  >
+                    Delete
+                  </button>
+                
+                  <Modal  id={item}/>
+                </div>
               </tr>
-            })}
-
-
-          </tbody> */}
-{/* </table> */ }
-
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
